@@ -1,7 +1,9 @@
 {
   "name": "elapotp.appversioncomposer",
-  "author": {
-    "name": "Artem Sukhliak"
+  "author":
+  {
+    "name": "Artem Sukhliak",
+    "url" : "https://github.com/Artein"
   },
   "displayName": "AppVersionComposer",
   "unity": "2021.3",
