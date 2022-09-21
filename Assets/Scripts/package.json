@@ -1,0 +1,12 @@
+{
+  "name": "elapotp.appversioncomposer",
+  "author": {
+    "name": "Artem Sukhliak"
+  },
+  "displayName": "AppVersionComposer",
+  "unity": "2021.3",
+  "version": "1.0.0",
+  "description": "Utilitarian scripts to update app version during build based on git tag",
+  "dependencies": {},
+  "scopedRegistries": []
+}
