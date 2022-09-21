@@ -33,13 +33,11 @@ namespace AppVersioning.Editor
             get
             {
                 var version = RunGitCommand(@"describe --tags --long --match ""v[0-9]*""");
+                // TODO: What will be if there no tags in repository
                 version = version.Replace('-', '.');
                 var revision = version.Substring(1, version.LastIndexOf('.') - 1);
-                
-                const int commitHashLength = 7;
-                // startIndex has +2 - to remove 'g' (git) from returned commitHash
-                var commitHash = version.Substring(version.LastIndexOf('.') + 2, commitHashLength);
-                version = revision + '-' + commitHash;
+                var commitHash = version[(version.LastIndexOf('.') + 2)..]; // startIndex+2 - to remove 'g' (git) from returned commitHash
+                version = revision + '-' + commitHash[..^1]; // -1 to remove \n in the end
 
                 if (Debug.isDebugBuild)
                 {
