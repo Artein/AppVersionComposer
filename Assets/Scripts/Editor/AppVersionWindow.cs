@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace Editor
+namespace AppVersioning.Editor
 {
     public static class AppVersionWindow
     {

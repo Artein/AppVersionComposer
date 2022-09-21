@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Editor
+namespace AppVersioning.Editor
 {
     /// <summary>
     /// GitException includes the error output from a Git.Run() command as well as the
