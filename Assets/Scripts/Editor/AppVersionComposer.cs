@@ -37,7 +37,7 @@ namespace AppVersioning.Editor
                 version = version.Replace('-', '.');
                 var revision = version.Substring(1, version.LastIndexOf('.') - 1);
                 var commitHash = version[(version.LastIndexOf('.') + 2)..]; // startIndex+2 - to remove 'g' (git) from returned commitHash
-                version = revision + '-' + commitHash[..^1]; // -1 to remove \n in the end
+                version = revision + '-' + commitHash;
 
                 if (Debug.isDebugBuild)
                 {
@@ -105,8 +105,9 @@ namespace AppVersioning.Editor
             {
                 throw new GitException(process.ExitCode, error.ToString());
             }
-            
-            return output.ToString();
+
+            var outputStr = output.ToString()[..^1];  // ^1 to remove \n in the end
+            return outputStr;
         }
     }
 }
