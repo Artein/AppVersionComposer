@@ -6,20 +6,6 @@ using Debug = UnityEngine.Debug;
 
 namespace AppVersioning.Editor
 {
-    /// <summary>
-    /// GitException includes the error output from a Git.Run() command as well as the
-    /// ExitCode it returned.
-    /// </summary>
-    public class GitException : InvalidOperationException
-    {
-        public GitException(int exitCode, string errors) : base(errors) => ExitCode = exitCode;
-
-        /// <summary>
-        /// The exit code returned when running the Git command.
-        /// </summary>
-        public readonly int ExitCode;
-    }
-    
     public static class AppVersionComposer
     {
         /// <summary>
@@ -32,16 +18,34 @@ namespace AppVersioning.Editor
         {
             get
             {
-                var version = RunGitCommand(@"describe --tags --long --match ""v[0-9]*""");
-                // TODO: What will be if there no tags in repository
-                version = version.Replace('-', '.');
-                var revision = version.Substring(1, version.LastIndexOf('.') - 1);
-                var commitHash = version[(version.LastIndexOf('.') + 2)..]; // startIndex+2 - to remove 'g' (git) from returned commitHash
-                version = revision + '-' + commitHash;
-
-                if (Debug.isDebugBuild)
+                string version = null;
+                
+                try
                 {
-                    version += '-' + Branch;
+                    version = RunGitCommand(@"describe --always --tags --long --match ""v[0-9]*""");
+                    if (string.IsNullOrEmpty(version) || !version.Contains('-'))
+                    {
+                        throw new AppVersionException("Your repository doesn't have tags or doesn't fit into 'v[0-9]*' regex");
+                    }
+                    
+                    version = version.Replace('-', '.');
+                    var revision = version.Substring(1, version.LastIndexOf('.') - 1);
+                    var commitHash = version[(version.LastIndexOf('.') + 2)..]; // startIndex+2 - to remove 'g' (git) from returned commitHash
+                    version = revision + '-' + commitHash;
+
+                    if (Debug.isDebugBuild)
+                    {
+                        version += '-' + Branch;
+                    }
+                }
+                catch (GitException ex)
+                {
+                    if (ex.Message == "fatal: No names found, cannot describe anything.\n")
+                    {
+                        throw new AppVersionException("Your repository doesn't have tags or doesn't fit into 'v[0-9]*' regex");
+                    }
+                    
+                    throw;
                 }
                 
                 return version;
@@ -108,6 +112,19 @@ namespace AppVersioning.Editor
 
             var outputStr = output.ToString()[..^1];  // ^1 to remove \n in the end
             return outputStr;
+        }
+        
+        /// <summary>
+        /// GitException includes the error output from a Git.Run() command as well as the ExitCode it returned.
+        /// </summary>
+        private class GitException : InvalidOperationException
+        {
+            public GitException(int exitCode, string errors) : base(errors) => ExitCode = exitCode;
+
+            /// <summary>
+            /// The exit code returned when running the Git command.
+            /// </summary>
+            public readonly int ExitCode;
         }
     }
 }

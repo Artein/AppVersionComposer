@@ -10,7 +10,9 @@ namespace AppVersioning.Editor
         
         void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
         {
-            PlayerSettings.bundleVersion = AppVersionComposer.BuildVersion;
+            var buildVersion = AppVersionComposer.BuildVersion;
+            AppVersionHolder.Editor_Instance.Editor_SetAppVersion(buildVersion);
+            PlayerSettings.bundleVersion = buildVersion;
         }
     }
 }

@@ -1,7 +1,9 @@
 {
     "name": "AppVersionComposer.Editor",
     "rootNamespace": "AppVersioning",
-    "references": [],
+    "references": [
+        "AppVersionComposer.Runtime"
+    ],
     "includePlatforms": [
         "Editor"
     ],
