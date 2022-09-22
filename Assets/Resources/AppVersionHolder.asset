@@ -15,7 +15,7 @@ MonoBehaviour:
   _appVersion:
     Major: 1
     Minor: 0
-    Patch: 1
-    CommitHash: 4755727
+    Patch: 2
+    CommitHash: f540d37
     Branch: Polishing-and-ios-fix
   _editor_buildPreprocessorOrder: 0
