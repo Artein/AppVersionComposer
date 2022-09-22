@@ -65,7 +65,7 @@ namespace AppVersioning.Editor
                 throw new GitException(process.ExitCode, error.ToString());
             }
 
-            var outputStr = output.ToString()[..^1];  // ^1 to remove \n in the end
+            var outputStr = output.ToString().TrimEnd(); // trim '\n' in the end
             return outputStr;
         }
     }

@@ -36,9 +36,9 @@ namespace AppVersioning
             }
         }
 
-        public void Editor_SetAppVersion(string appVersion)
+        public void Editor_SetAppVersion(AppVersionData appVersionData)
         {
-            _appVersion = appVersion;
+            _appVersion = appVersionData;
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssetIfDirty(this);
         }
