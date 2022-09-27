@@ -7,9 +7,10 @@ namespace AppVersioning.Editor
         [MenuItem("Game/Show App Version")]
         private static void ShowWindow()
         {
-            var buildVersion = AppVersionComposer.BuildVersion;
-            AppVersionHolder.Editor_Instance.Editor_SetAppVersion(buildVersion);
-            EditorUtility.DisplayDialog("App version", buildVersion, "Ok");
+            var appVersion = AppVersionComposer.Version;
+            AppVersionHolder.Editor_Instance.Editor_SetAppVersion(appVersion);
+            
+            EditorUtility.DisplayDialog("App version", appVersion.BuildString(), "Ok");
         }
     }
 }

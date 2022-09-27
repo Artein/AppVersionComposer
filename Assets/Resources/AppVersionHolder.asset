@@ -12,4 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a88ced79e69f4ba683559862e06b3c4d, type: 3}
   m_Name: AppVersionHolder
   m_EditorClassIdentifier: 
-  _appVersion: 1.0.0-42891ae-main
+  _appVersion:
+    Major: 1
+    Minor: 0
+    Patch: 2
+    CommitHash: f540d37
+    Branch: Polishing-and-ios-fix
+  _editor_buildPreprocessorOrder: 0

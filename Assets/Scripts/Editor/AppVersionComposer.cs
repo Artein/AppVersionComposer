@@ -1,42 +1,37 @@
-using System;
-using System.Diagnostics;
-using System.Text;
-using UnityEngine;
-using Debug = UnityEngine.Debug;
+// Mostly inspired on the blog post "Version Numbering for Games in Unity and Git" by Edward Rowe 
+// https://blog.redbluegames.com/version-numbering-for-games-in-unity-and-git-1d05fca83022
 
 namespace AppVersioning.Editor
 {
     public static class AppVersionComposer
     {
         /// <summary>
-        /// Retrieves the build version from git based on the most recent matching tag and
-        /// commit history. This returns the version as: {major.minor.build-commitHash} where 'build'
-        /// represents the nth commit after the tagged commit.
-        /// Note: The initial 'v' and the commit hash code are removed.
+        /// Retrieves the build version from git based on the most recent matching tag and commit history.
+        /// This returns the version as: {major.minor.patch-commitHash} where 'patch' represents the n-th commit after the tagged commit.
         /// </summary>
-        public static string BuildVersion
+        public static AppVersionData Version
         {
             get
             {
-                string version = null;
-                
+                int major, minor, patch;
+                string commitHash;
+
                 try
                 {
-                    version = RunGitCommand(@"describe --always --tags --long --match ""v[0-9]*""");
-                    if (string.IsNullOrEmpty(version) || !version.Contains('-'))
+                    var gitOutput = GitCommandExecutor.Execute(@"describe --always --tags --long --match ""v[0-9]*""");
+                    if (string.IsNullOrEmpty(gitOutput) || !gitOutput.Contains('-'))
                     {
                         throw new AppVersionException("Your repository doesn't have tags or doesn't fit into 'v[0-9]*' regex");
                     }
-                    
-                    version = version.Replace('-', '.');
-                    var revision = version.Substring(1, version.LastIndexOf('.') - 1);
-                    var commitHash = version[(version.LastIndexOf('.') + 2)..]; // startIndex+2 - to remove 'g' (git) from returned commitHash
-                    version = revision + '-' + commitHash;
 
-                    if (Debug.isDebugBuild)
-                    {
-                        version += '-' + Branch;
-                    }
+                    gitOutput = gitOutput[1..]; // skip leading 'v'
+                    
+                    var tokens = gitOutput.Split('.', '-');
+                    major = int.Parse(tokens[0]);
+                    minor = int.Parse(tokens[1]);
+                    patch = int.Parse(tokens[2]);
+                    
+                    commitHash = tokens[3][1..]; // skip leading 'g' (it is often gCOMMIT_HASH, where 'g' is for 'git')
                 }
                 catch (GitException ex)
                 {
@@ -48,83 +43,19 @@ namespace AppVersioning.Editor
                     throw;
                 }
                 
-                return version;
+                return new AppVersionData(major, minor, patch, commitHash, Branch);
             }
         }
 
         /// <summary>
         /// The currently active branch.
         /// </summary>
-        public static string Branch => RunGitCommand(@"rev-parse --abbrev-ref HEAD");
+        public static string Branch => GitCommandExecutor.Execute(@"rev-parse --abbrev-ref HEAD");
 
+        // TODO: Do we need this?
         /// <summary>
         /// Returns a listing of all uncommitted or untracked (added) files.
         /// </summary>
-        public static string Status => RunGitCommand(@"status --porcelain");
-
-
-        /* Methods ================================================================================================================ */
-
-        /// <summary>
-        /// Runs git.exe with the specified arguments and returns the output.
-        /// </summary>
-        public static string RunGitCommand(string arguments)
-        {
-            using var process = new Process();
-            process.StartInfo = new ProcessStartInfo
-            {
-                FileName = @"git", 
-                Arguments = arguments, 
-                CreateNoWindow = true, 
-                WorkingDirectory = Application.dataPath,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false
-            };
-            
-            var output = new StringBuilder();
-            process.OutputDataReceived += (_, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    output.AppendLine(e.Data);
-                }
-            };
-
-            var error = new StringBuilder();
-            process.ErrorDataReceived += (_, e) =>
-            {
-                if (!string.IsNullOrEmpty(e.Data))
-                {
-                    error.AppendLine(e.Data);
-                }
-            };
-
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
-            
-            if (process.ExitCode != 0)
-            {
-                throw new GitException(process.ExitCode, error.ToString());
-            }
-
-            var outputStr = output.ToString()[..^1];  // ^1 to remove \n in the end
-            return outputStr;
-        }
-        
-        /// <summary>
-        /// GitException includes the error output from a Git.Run() command as well as the ExitCode it returned.
-        /// </summary>
-        private class GitException : InvalidOperationException
-        {
-            public GitException(int exitCode, string errors) : base(errors) => ExitCode = exitCode;
-
-            /// <summary>
-            /// The exit code returned when running the Git command.
-            /// </summary>
-            public readonly int ExitCode;
-        }
+        // public static string Status => GitCommandExecutor.Execute(@"status --porcelain");
     }
 }
