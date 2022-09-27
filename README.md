@@ -21,13 +21,13 @@ Composed version is written to 2 places: `PlayerSettings.bundleVersion` field an
 | MacOS   | 1.3.5-f540d3-MyFeatureBranch | 1.3.5-f540d3     |
 | Windows | 1.3.5-f540d3-MyFeatureBranch | 1.3.5-f540d3     |
 
-[^1]: iOS (ipadOS etc) supports only semantic versioning ([semver](https://semver.org/)). To get full app version check usage of <a href="#app_version_holder_asset">AppVersionHolder asset</a>
+[^1]: iOS (ipadOS etc) supports only semantic versioning ([semver](https://semver.org/)). To get full app version check usage of <a href="#appversionholder-asset">AppVersionHolder asset</a>
 
 ### Requirements:
 * Repository has at least one tag
 * Git tag must be 'vX.X', where X - is a positive number (eg. v1.2)
 
-### AppVersionHolder asset {#app_version_holder_asset}
+### AppVersionHolder asset
 Some platforms might not support any kind of version string (for example iOS). 
 Often, they use semantic versioning with strict restriction to have `{major.minor.patch}` view. 
 In this case in your implementation you can use `AppVersionHolder` scriptable object located in `Assets/Resources`.
