@@ -7,7 +7,7 @@
   },
   "displayName": "AppVersionComposer",
   "unity": "2021.3",
-  "version": "1.1",
+  "version": "1.1.1",
   "description": "Utilitarian scripts to update app version during build based on git tag",
   "keywords": [ "version" ],
   "license": "MIT",
